@@ -42,4 +42,5 @@ class QColor {
 QColor.$colors = {};
 QColor.$colorsCount = 0;
 QColor.comparableColorsLimit = 10000;
+QColor.nonNullableType = true;
 QmlWeb.QColor = QColor;
