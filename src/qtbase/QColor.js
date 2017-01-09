@@ -54,21 +54,29 @@ class QColor {
     }
   }
   toString() {
+    if (this.$string) return this.$string;
     const argb = [this.$a, this.$r, this.$g, this.$b].map(x =>
       (Math.round(x * 255) + 0x100).toString(16).substr(-2)
     );
     if (argb[0] === "ff") {
       argb.shift(); // We don't need alpha if it's ff
     }
+    this.$string = `#${argb.join("")}`;
     return `#${argb.join("")}`;
   }
   get $css() {
-    if (this.$a === 1) return this.toString();
-    if (this.$a === 0) return "transparent";
-    const intr = Math.round(this.$r * 255);
-    const intg = Math.round(this.$g * 255);
-    const intb = Math.round(this.$b * 255);
-    return `rgba(${intr},${intg},${intb},${this.$a})`;
+    if (this.$cssValue) return this.$cssValue;
+    if (this.$a === 1) {
+      this.$cssValue = this.toString();
+    } else if (this.$a === 0) {
+      this.$cssValue = "transparent";
+    } else {
+      const intr = Math.round(this.$r * 255);
+      const intg = Math.round(this.$g * 255);
+      const intb = Math.round(this.$b * 255);
+      this.$cssValue = `rgba(${intr},${intg},${intb},${this.$a})`;
+    }
+    return this.$cssValue;
   }
   get r() {
     return this.$r;
@@ -84,18 +92,22 @@ class QColor {
   }
   set r(r) {
     this.$r = r;
+    this.$string = this.$cssValue = null;
     this.$changed.execute();
   }
   set g(g) {
     this.$g = g;
+    this.$string = this.$cssValue = null;
     this.$changed.execute();
   }
   set b(b) {
     this.$b = b;
+    this.$string = this.$cssValue = null;
     this.$changed.execute();
   }
   set a(a) {
     this.$a = a;
+    this.$string = this.$cssValue = null;
     this.$changed.execute();
   }
   $get() {
