@@ -53,6 +53,42 @@ describe("QtBase.QColor", function() {
     });
   });
 
+  it("darker", function() {
+    [
+      ["gray", undefined, "#404040"],
+      ["gray", 2, "#404040"],
+      ["gray", 8, "#101010"],
+      ["#aa8822", 2, "#554411"],
+      ["#88aa22", 2, "#445511"],
+      ["#8822aa", 2, "#441155"],
+      ["#a52", 0.5, "#ffb588"]
+    ].forEach(function(input) {
+      var color = input[1] === undefined ?
+        QmlWeb.QColor.darker(input[0]) :
+        QmlWeb.QColor.darker(input[0], input[1]);
+      expect(color.toString()).toBe(input[2]);
+    });
+  });
+
+  it("lighter", function() {
+    [
+      ["gray", undefined, "#c0c0c0"],
+      ["gray", 2, "#ffffff"],
+      ["#aa8822", undefined, "#ffcc33"],
+      ["#88aa22", undefined, "#ccff33"],
+      ["#8822aa", undefined, "#cc33ff"],
+      ["#a52", 2, "#ffb588"],
+      ["#25a", 2, "#88b5ff"],
+      ["#52a", 2, "#b588ff"],
+      ["#aa8822", 0.5, "#554411"]
+    ].forEach(function(input) {
+      var color = input[1] === undefined ?
+        QmlWeb.QColor.lighter(input[0]) :
+        QmlWeb.QColor.lighter(input[0], input[1]);
+      expect(color.toString()).toBe(input[2]);
+    });
+  });
+
   it("comparison", function() {
     var color = new QmlWeb.QColor("#abcDEF");
     expect(color.toString()).toBe("#abcdef");
