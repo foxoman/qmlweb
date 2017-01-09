@@ -1,9 +1,16 @@
 class QColor {
-  constructor(val) {
+  constructor(...args) {
     this.r = this.g = this.b = 0;
     this.a = 1;
-    this.$value = "black";
-    if (val instanceof QColor) {
+    const val = args[0];
+    if (args.length >= 3) {
+      this.r = args[0];
+      this.g = args[1];
+      this.b = args[2];
+      if (args.length >= 4) {
+        this.a = args[3];
+      }
+    } else if (val instanceof QColor) {
       // Copy constructor
       this.a = val.a;
       this.r = val.r;
@@ -88,13 +95,16 @@ class QColor {
 QColor.$colors = {};
 QColor.$colorsCount = 0;
 QColor.comparableColorsLimit = 10000;
-QColor.rgba = (r, g, b, a = 1) => {
-  const color = new QColor();
-  color.r = r;
-  color.g = g;
-  color.b = b;
-  color.a = a;
-  return color;
+QColor.rgba = (r, g, b, a = 1) => new QColor(r, g, b, a);
+QColor.hsva = (h, s, v, a = 1) => {
+  const c = v * s;
+  const m = v - c;
+  return QColor.$hcma(h, c, m, a);
+};
+QColor.hsla = (h, s, l, a = 1) => {
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const m = l - c / 2;
+  return QColor.$hcma(h, c, m, a);
 };
 QColor.$hcma = (h, c, m, a) => {
   const hh = h * 6 % 6;
@@ -120,17 +130,7 @@ QColor.$hcma = (h, c, m, a) => {
       rgb = [c, 0, x];
       break;
   }
-  return QColor.rgba(rgb[0] + m, rgb[1] + m, rgb[2] + m, a);
-};
-QColor.hsva = (h, s, v, a = 1) => {
-  const c = v * s;
-  const m = v - c;
-  return QColor.$hcma(h, c, m, a);
-};
-QColor.hsla = (h, s, l, a = 1) => {
-  const c = (1 - Math.abs(2 * l - 1)) * s;
-  const m = l - c / 2;
-  return QColor.$hcma(h, c, m, a);
+  return new QColor(rgb[0] + m, rgb[1] + m, rgb[2] + m, a);
 };
 QColor.colormap = { // https://www.w3.org/TR/SVG/types.html#ColorKeywords
   aliceblue: [240, 248, 255],

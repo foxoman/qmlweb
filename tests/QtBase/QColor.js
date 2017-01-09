@@ -20,7 +20,8 @@ describe("QtBase.QColor", function() {
       ["transparent", "#00000000"],
       ["#abcDEF", "#abcdef"],
       ["red", "#ff0000"],
-      ["#01234567", "#01234567"]
+      ["#01234567", "#01234567"],
+      ["#18d", "#1188dd"]
     ];
     colors.forEach(function(input) {
       var color = new QmlWeb.QColor(input[0]);
