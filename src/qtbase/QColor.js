@@ -111,22 +111,34 @@ class QColor {
     this.$changed.execute();
   }
   get hsvHue() {
-    // TODO
+    const v = this.hsvValue;
+    const m = Math.min(this.$r, this.$g, this.$b);
+    if (v === m) return 0;
+    if (v === this.$r) return ((this.$g - this.$b) / (v - m) + 1) % 1 / 6;
+    if (v === this.$g) return ((this.$b - this.$r) / (v - m) + 2) / 6;
+    if (v === this.$b) return ((this.$r - this.$g) / (v - m) + 4) / 6;
+    throw new Error();
   }
   get hsvSaturation() {
-    // TODO
+    const v = this.hsvValue;
+    if (v === 0) return 0;
+    return 1 - Math.min(this.$r, this.$g, this.$b) / v;
   }
   get hsvValue() {
-    // TODO
+    return Math.max(this.$r, this.$g, this.$b);
   }
   get hslHue() {
-    // TODO
+    return this.hsvHue;
   }
   get hslSaturation() {
-    // TODO
+    const max = Math.max(this.$r, this.$g, this.$b);
+    const min = Math.min(this.$r, this.$g, this.$b);
+    return (max - min) / (1 - Math.abs(1 - max - min));
   }
   get hslLightness() {
-    // TODO
+    const max = Math.max(this.$r, this.$g, this.$b);
+    const min = Math.min(this.$r, this.$g, this.$b);
+    return (max + min) / 2;
   }
   set hsvHue(h) {
     const rgb = QColor.$hsv(h, this.hsvSaturation, this.hsvValue);
