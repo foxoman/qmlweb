@@ -113,7 +113,7 @@ class QColor {
   get hsvHue() {
     const v = this.hsvValue;
     const m = Math.min(this.$r, this.$g, this.$b);
-    if (v === m) return 0;
+    if (v === m) return -1;
     if (v === this.$r) return ((this.$g - this.$b) / (v - m) + 1) % 1 / 6;
     if (v === this.$g) return ((this.$b - this.$r) / (v - m) + 2) / 6;
     if (v === this.$b) return ((this.$r - this.$g) / (v - m) + 4) / 6;
@@ -228,7 +228,7 @@ QColor.$hsl = (h, s, l) => {
   return QColor.$hcma(h, c, m);
 };
 QColor.$hcma = (h, c, m) => {
-  const hh = h * 6 % 6;
+  const hh = h > 0 ? h * 6 % 6 : 0;
   const x = c * (1 - Math.abs(hh % 2 - 1));
   let rgb;
   switch (Math.floor(hh)) {
@@ -254,14 +254,18 @@ QColor.$hcma = (h, c, m) => {
   return rgb.map(y => Math.min(1, y + m));
 };
 QColor.darker = (baseColor, factor = 2) => {
-  const color = new QColor(baseColor);
-  color.hsvValue /= factor;
-  return color;
+  const color = baseColor instanceof QColor ? baseColor : new QColor(baseColor);
+  const v = color.hsvValue / factor;
+  // Undocumented in Qt, but this matches the observed Qt behaviour
+  const s = color.hsvSaturation - Math.max(0, v - 1);
+  return QColor.hsva(color.hsvHue, Math.max(0, s), Math.min(1, v), color.a);
 };
 QColor.lighter = (baseColor, factor = 1.5) => {
-  const color = new QColor(baseColor);
-  color.hsvValue *= factor;
-  return color;
+  const color = baseColor instanceof QColor ? baseColor : new QColor(baseColor);
+  const v = color.hsvValue * factor;
+  // Undocumented in Qt, but this matches the observed Qt behaviour
+  const s = color.hsvSaturation - Math.max(0, v - 1);
+  return QColor.hsva(color.hsvHue, Math.max(0, s), Math.min(1, v), color.a);
 };
 QColor.equal = (lhs, rhs) => {
   const a = lhs instanceof QColor ? lhs : new QColor(lhs);
