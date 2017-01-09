@@ -132,6 +132,18 @@ QColor.$hcma = (h, c, m, a) => {
   }
   return new QColor(rgb[0] + m, rgb[1] + m, rgb[2] + m, a);
 };
+QColor.darker = (/*baseColor, factor = 2.0*/) => {
+  // TODO
+};
+QColor.lighter = (/*baseColor, factor = 1.5*/) => {
+  // TODO
+};
+QColor.equal = (lhs, rhs) => {
+  const a = lhs instanceof QColor ? lhs : new QColor(lhs);
+  const b = rhs instanceof QColor ? rhs : new QColor(rhs);
+  return a.toString() === b.toString();
+};
+
 QColor.colormap = { // https://www.w3.org/TR/SVG/types.html#ColorKeywords
   aliceblue: [240, 248, 255],
   antiquewhite: [250, 235, 215],
