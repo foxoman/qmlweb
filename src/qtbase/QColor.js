@@ -253,11 +253,15 @@ QColor.$hcma = (h, c, m) => {
   }
   return [rgb[0] + m, rgb[1] + m, rgb[2] + m];
 };
-QColor.darker = (/*baseColor, factor = 2.0*/) => {
-  // TODO
+QColor.darker = (baseColor, factor = 2) => {
+  const color = new QColor(baseColor);
+  color.hsvValue /= factor;
+  return color;
 };
-QColor.lighter = (/*baseColor, factor = 1.5*/) => {
-  // TODO
+QColor.lighter = (baseColor, factor = 1.5) => {
+  const color = new QColor(baseColor);
+  color.hsvValue *= factor;
+  return color;
 };
 QColor.equal = (lhs, rhs) => {
   const a = lhs instanceof QColor ? lhs : new QColor(lhs);
