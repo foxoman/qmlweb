@@ -251,7 +251,7 @@ QColor.$hcma = (h, c, m) => {
       rgb = [c, 0, x];
       break;
   }
-  return [rgb[0] + m, rgb[1] + m, rgb[2] + m];
+  return rgb.map(y => Math.min(1, y + m));
 };
 QColor.darker = (baseColor, factor = 2) => {
   const color = new QColor(baseColor);
