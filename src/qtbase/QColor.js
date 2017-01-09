@@ -110,6 +110,72 @@ class QColor {
     this.$string = this.$cssValue = null;
     this.$changed.execute();
   }
+  get hsvHue() {
+    // TODO
+  }
+  get hsvSaturation() {
+    // TODO
+  }
+  get hsvValue() {
+    // TODO
+  }
+  get hslHue() {
+    // TODO
+  }
+  get hslSaturation() {
+    // TODO
+  }
+  get hslLightness() {
+    // TODO
+  }
+  set hsvHue(h) {
+    const rgb = QColor.$hsv(h, this.hsvSaturation, this.hsvValue);
+    this.$r = rgb[0];
+    this.$g = rgb[1];
+    this.$b = rgb[2];
+    this.$string = this.$cssValue = null;
+    this.$changed.execute();
+  }
+  set hsvSaturation(s) {
+    const rgb = QColor.$hsv(this.hsvHue, s, this.hsvValue);
+    this.$r = rgb[0];
+    this.$g = rgb[1];
+    this.$b = rgb[2];
+    this.$string = this.$cssValue = null;
+    this.$changed.execute();
+  }
+  set hsvValue(v) {
+    const rgb = QColor.$hsv(this.hsvHue, this.hsvSaturation, v);
+    this.$r = rgb[0];
+    this.$g = rgb[1];
+    this.$b = rgb[2];
+    this.$string = this.$cssValue = null;
+    this.$changed.execute();
+  }
+  set hslHue(h) {
+    const rgb = QColor.$hsl(h, this.hslSaturation, this.hslLightness);
+    this.$r = rgb[0];
+    this.$g = rgb[1];
+    this.$b = rgb[2];
+    this.$string = this.$cssValue = null;
+    this.$changed.execute();
+  }
+  set hslSaturation(s) {
+    const rgb = QColor.$hsl(this.hslSaturation, s, this.hslLightness);
+    this.$r = rgb[0];
+    this.$g = rgb[1];
+    this.$b = rgb[2];
+    this.$string = this.$cssValue = null;
+    this.$changed.execute();
+  }
+  set hslLightness(l) {
+    const rgb = QColor.$hsl(this.hslLightness, this.hslSaturation, l);
+    this.$r = rgb[0];
+    this.$g = rgb[1];
+    this.$b = rgb[2];
+    this.$string = this.$cssValue = null;
+    this.$changed.execute();
+  }
   $get() {
     // Returns the same instance for all equivalent colors.
     // NOTE: the returned value should not be changed using method calls, if
@@ -137,17 +203,19 @@ QColor.$colors = {};
 QColor.$colorsCount = 0;
 QColor.comparableColorsLimit = 10000;
 QColor.rgba = (r, g, b, a = 1) => new QColor(r, g, b, a);
-QColor.hsva = (h, s, v, a = 1) => {
+QColor.hsva = (h, s, v, a = 1) => new QColor(...QColor.$hsv(h, s, v), a);
+QColor.hsla = (h, s, l, a = 1) => new QColor(...QColor.$hsl(h, s, l), a);
+QColor.$hsv = (h, s, v) => {
   const c = v * s;
   const m = v - c;
-  return QColor.$hcma(h, c, m, a);
+  return QColor.$hcma(h, c, m);
 };
-QColor.hsla = (h, s, l, a = 1) => {
+QColor.$hsl = (h, s, l) => {
   const c = (1 - Math.abs(2 * l - 1)) * s;
   const m = l - c / 2;
-  return QColor.$hcma(h, c, m, a);
+  return QColor.$hcma(h, c, m);
 };
-QColor.$hcma = (h, c, m, a) => {
+QColor.$hcma = (h, c, m) => {
   const hh = h * 6 % 6;
   const x = c * (1 - Math.abs(hh % 2 - 1));
   let rgb;
@@ -171,7 +239,7 @@ QColor.$hcma = (h, c, m, a) => {
       rgb = [c, 0, x];
       break;
   }
-  return new QColor(rgb[0] + m, rgb[1] + m, rgb[2] + m, a);
+  return [rgb[0] + m, rgb[1] + m, rgb[2] + m];
 };
 QColor.darker = (/*baseColor, factor = 2.0*/) => {
   // TODO
