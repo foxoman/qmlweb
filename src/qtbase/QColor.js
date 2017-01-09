@@ -1,44 +1,45 @@
 class QColor {
   constructor(...args) {
-    this.r = this.g = this.b = 0;
-    this.a = 1;
+    this.$changed = new QmlWeb.Signal();
+    this.$r = this.$g = this.$b = 0;
+    this.$a = 1;
     const val = args[0];
     if (args.length >= 3) {
-      this.r = args[0];
-      this.g = args[1];
-      this.b = args[2];
+      this.$r = args[0];
+      this.$g = args[1];
+      this.$b = args[2];
       if (args.length >= 4) {
-        this.a = args[3];
+        this.$a = args[3];
       }
     } else if (val instanceof QColor) {
       // Copy constructor
-      this.a = val.a;
-      this.r = val.r;
-      this.g = val.g;
-      this.b = val.b;
+      this.$a = val.a;
+      this.$r = val.r;
+      this.$g = val.g;
+      this.$b = val.b;
     } else if (typeof val === "string") {
       const lval = val.toLowerCase();
       if (QColor.colormap[lval]) {
         const rgb = QColor.colormap[lval];
-        this.r = rgb[0] / 255;
-        this.g = rgb[1] / 255;
-        this.b = rgb[2] / 255;
+        this.$r = rgb[0] / 255;
+        this.$g = rgb[1] / 255;
+        this.$b = rgb[2] / 255;
       } else if (lval === "transparent") {
-        this.a = 0;
+        this.$a = 0;
       } else if (lval[0] === "#") {
         const hex = lval.substr(1);
         if (hex.length === 3) {
-          this.r = parseInt(hex[0], 16) / 15;
-          this.g = parseInt(hex[1], 16) / 15;
-          this.b = parseInt(hex[2], 16) / 15;
+          this.$r = parseInt(hex[0], 16) / 15;
+          this.$g = parseInt(hex[1], 16) / 15;
+          this.$b = parseInt(hex[2], 16) / 15;
         } else {
           const rgb = hex.match(/.{2}/g).map(x => parseInt(x, 16));
           if (rgb.length === 4) {
-            this.a = rgb.shift() / 255;
+            this.$a = rgb.shift() / 255;
           }
-          this.r = rgb[0] / 255;
-          this.g = rgb[1] / 255;
-          this.b = rgb[2] / 255;
+          this.$r = rgb[0] / 255;
+          this.$g = rgb[1] / 255;
+          this.$b = rgb[2] / 255;
         }
       } else {
         throw new Error(`Can not convert ${val} to color`);
@@ -47,13 +48,13 @@ class QColor {
       // we assume it is int value and must be converted to css hex with padding
       const hex = (Math.round(val) + 0x1000000).toString(16).substr(-6);
       const rgb = hex.match(/.{2}/g).map(x => parseInt(x, 16));
-      this.r = rgb[0] / 255;
-      this.g = rgb[1] / 255;
-      this.b = rgb[2] / 255;
+      this.$r = rgb[0] / 255;
+      this.$g = rgb[1] / 255;
+      this.$b = rgb[2] / 255;
     }
   }
   toString() {
-    const argb = [this.a, this.r, this.g, this.b].map(x =>
+    const argb = [this.$a, this.$r, this.$g, this.$b].map(x =>
       (Math.round(x * 255) + 0x100).toString(16).substr(-2)
     );
     if (argb[0] === "ff") {
@@ -62,12 +63,40 @@ class QColor {
     return `#${argb.join("")}`;
   }
   get $css() {
-    if (this.a === 1) return this.toString();
-    if (this.a === 0) return "transparent";
-    const intr = Math.round(this.r * 255);
-    const intg = Math.round(this.g * 255);
-    const intb = Math.round(this.b * 255);
-    return `rgba(${intr},${intg},${intb},${this.a})`;
+    if (this.$a === 1) return this.toString();
+    if (this.$a === 0) return "transparent";
+    const intr = Math.round(this.$r * 255);
+    const intg = Math.round(this.$g * 255);
+    const intb = Math.round(this.$b * 255);
+    return `rgba(${intr},${intg},${intb},${this.$a})`;
+  }
+  get r() {
+    return this.$r;
+  }
+  get g() {
+    return this.$g;
+  }
+  get b() {
+    return this.$b;
+  }
+  get a() {
+    return this.$a;
+  }
+  set r(r) {
+    this.$r = r;
+    this.$changed.execute();
+  }
+  set g(g) {
+    this.$g = g;
+    this.$changed.execute();
+  }
+  set b(b) {
+    this.$b = b;
+    this.$changed.execute();
+  }
+  set a(a) {
+    this.$a = a;
+    this.$changed.execute();
   }
   $get() {
     // Returns the same instance for all equivalent colors.
